@@ -7,17 +7,32 @@ return {
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/neodev.nvim", opts = {} },
 	},
-	config = function()
-		-- import lspconfig plugin
+	opts = {
+		servers = {
+			lua_ls = {},
+			-- go
+			gopls = {},
+			templ = {},
+			-- py
+			pyright = {},
+			-- js
+			ts_ls = { enabled = true },
+			vtsls = {},
+			-- other
+			htmx = {},
+		},
+	},
+	config = function(_, opts)
 		local lspconfig = require("lspconfig")
-
-		-- import mason_lspconfig plugin
 		local mason_lspconfig = require("mason-lspconfig")
 
-		-- import cmp-nvim-lsp plugin
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 		local keymap = vim.keymap -- for conciseness
+
+		local lspconfig = require("lspconfig")
+		for server, config in pairs(opts.servers) do
+			config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
+			lspconfig[server].setup(config)
+		end
 
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -81,35 +96,6 @@ return {
 					[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
 					[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
 					[vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
-				},
-			},
-		})
-
-		-- used to enable autocompletion (assign to every lsp server config)
-		local capabilities = cmp_nvim_lsp.default_capabilities()
-		local util = require("lspconfig.util")
-
-		lspconfig.yamlls.setup({
-			settings = {
-				yaml = {
-					schemaStore = {
-						enable = false,
-						url = "",
-					},
-					schemas = require("schemastore").yaml.schemas({
-						-- select subset from the JSON schema catalog
-						select = {
-							"kustomization.yaml",
-							"docker-compose.yml",
-						},
-
-						-- additional schemas (not in the catalog)
-						extra = {
-							url = "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/argoproj.io/application_v1alpha1.json",
-							name = "Argo CD Application",
-							fileMatch = "argocd-application.yaml",
-						},
-					}),
 				},
 			},
 		})
