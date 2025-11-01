@@ -9,7 +9,7 @@ return {
 
 		nvimtree.setup({
 			view = {
-				width = 35,
+				width = 50,
 				relativenumber = true,
 			},
 			renderer = {
@@ -36,7 +36,7 @@ return {
 				custom = { ".DS_Store" },
 			},
 			git = {
-				ignore = false,
+				ignore = true,
 			},
 		})
 
