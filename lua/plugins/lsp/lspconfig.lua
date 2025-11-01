@@ -3,6 +3,7 @@ return {
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
+		"b0o/SchemaStore.nvim",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/neodev.nvim", opts = {} },
 	},
@@ -87,5 +88,30 @@ return {
 		-- used to enable autocompletion (assign to every lsp server config)
 		local capabilities = cmp_nvim_lsp.default_capabilities()
 		local util = require("lspconfig.util")
+
+		lspconfig.yamlls.setup({
+			settings = {
+				yaml = {
+					schemaStore = {
+						enable = false,
+						url = "",
+					},
+					schemas = require("schemastore").yaml.schemas({
+						-- select subset from the JSON schema catalog
+						select = {
+							"kustomization.yaml",
+							"docker-compose.yml",
+						},
+
+						-- additional schemas (not in the catalog)
+						extra = {
+							url = "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/argoproj.io/application_v1alpha1.json",
+							name = "Argo CD Application",
+							fileMatch = "argocd-application.yaml",
+						},
+					}),
+				},
+			},
+		})
 	end,
 }
