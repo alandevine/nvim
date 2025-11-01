@@ -51,10 +51,9 @@ return {
 		local keymap = vim.keymap -- for conciseness
 		local blink = require("blink.cmp")
 
-		local lspconfig = require("lspconfig")
 		for server, config in pairs(opts.servers) do
 			config.capabilities = blink.get_lsp_capabilities(config.capabilities)
-			lspconfig[server].setup(config)
+			vim.lsp.config(server, config)
 		end
 
 		vim.api.nvim_create_autocmd("LspAttach", {
